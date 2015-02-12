@@ -153,7 +153,6 @@ def coding_strand_to_AA(dna):
         dna: a DNA sequence represented as a string
         returns: a string containing the sequence of amino acids encoded by the
                  the input DNA fragment
-
         >>> coding_strand_to_AA("ATGCGA")
         'MR'
         >>> coding_strand_to_AA("ATGCCCGCTTT")
@@ -165,7 +164,7 @@ def coding_strand_to_AA(dna):
         AA += aa_table[codon]
     return AA
 
-def gene_finder(dna, threshold):
+def gene_finder(dna):
     """ Returns the amino acid sequences coded by all genes that have an ORF
         larger than the specified threshold.
         
@@ -175,9 +174,13 @@ def gene_finder(dna, threshold):
         returns: a list of all amino acid sequences whose ORFs meet the minimum
                  length specified.
     """
+    threshold =  longest_ORF_noncoding(dna,1500)
     ORFS = find_all_ORFs_both_strands(dna)
     long_ORFS = [i for i in ORFS if len(i) > threshold]
-    return long_ORFS
+    AA = []
+    for strand in coding_strands:
+        AA.append(coding_strand_to_AA(strand))
+    return AA
 
 def get_threshold():
     """Returns a conservative threshold to use to get ORFS. Prints 789"""
@@ -187,14 +190,11 @@ def get_threshold():
 def run_gene_finder():
     """Loads gene and returns long_ORFS"""
     dna = load_seq('./data/X73525.fa')
-    coding_strands = gene_finder(dna,700)
-    AA = []
-    for strand in coding_strands:
-        AA.append(coding_strand_to_AA(strand))
-    return AA
+    amino_acids = gene_finder(dna)
+    return amino_acids
     
 if __name__ == "__main__":
     #print get_threshold()
     print run_gene_finder()
-    import doctest
-    doctest.testmod()
+    #import doctest
+    #doctest.testmod()
